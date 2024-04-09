@@ -7,7 +7,7 @@ import (
 
 func Router() *gin.Engine{
 	r := gin.Default()
-	r.POST("/user/login",service.Login)
-	r.POST("/user/register",service.Register)
+	r.POST("/admin/login",service.Login)
+	r.POST("/admin/register",service.Register)
 	return r
 }

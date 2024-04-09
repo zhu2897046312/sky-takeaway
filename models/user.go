@@ -33,3 +33,8 @@ func (u *User)Update(user User) *gorm.DB{
 func (u *User)Delete(open_id string) *gorm.DB{
     return utils.DB_MySQL.Model(&User{}).Where("open_id =?", open_id).Delete(&User{})
 }
+
+func (u *User) FindByID(open_id string) (*User,*gorm.DB){
+	user := User{}
+	return &user,utils.DB_MySQL.Model(&User{}).Where("open_id =?", open_id).Find(&user)
+}

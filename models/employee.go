@@ -31,7 +31,7 @@ func (u *Employee) Insert(employee *Employee) *gorm.DB {
 	return utils.DB_MySQL.Model(&Employee{}).Create(employee)
 }
 
-func (u *Employee) Update(employee Employee) *gorm.DB {
+func (u *Employee) Update(employee *Employee) *gorm.DB {
 	return utils.DB_MySQL.Model(&Employee{}).Where("user_name =?", employee.UserName).Updates(&employee)
 }
 
@@ -42,4 +42,14 @@ func (u *Employee) Delete(user_name string) *gorm.DB {
 func (u *Employee) FindByUserName(user_name string) (*Employee, *gorm.DB) {
 	employee := Employee{}
 	return &employee, utils.DB_MySQL.Model(&Employee{}).Where("user_name =?", user_name).Find(&employee)
+}
+
+func (u *Employee) PageQuery(page int, pageSize int) ([]Employee, *gorm.DB) {
+	employees := make([]Employee, 0)
+	var total int64
+
+	utils.DB_MySQL.Model(&Employee{}).Count(&total)
+	offset := (page - 1) * pageSize
+	query := utils.DB_MySQL.Model(&Employee{}).Limit(pageSize).Offset(offset).Find(&employees)
+	return employees, query
 }

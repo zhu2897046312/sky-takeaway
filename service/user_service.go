@@ -33,6 +33,8 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
+	//TODO: status 启用、禁用该账户
+
 	//md5加密
 	password, err := utils.Md5(employee.Password)
 	if err!= nil {
@@ -90,7 +92,7 @@ func Register(c *gin.Context) {
 	}
 	//TODO: 是否已经存在该用户
 	sql_employee, db := employee.FindByUserName(employee.UserName)
-	if db.Error == nil {
+	if db.Error == nil && sql_employee.UserName != "" {
 		log.Println(db.Error)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    http.StatusBadRequest,
@@ -170,7 +172,7 @@ func UpdateEmployee(c *gin.Context){
 		return
 	}
 	//判断是否存在 如：存在，修改 否则 返回
-	_, db := employee.FindByUserName(employee.UserName)
+	sql_employee, db := employee.FindByUserName(employee.UserName)
 	if db.Error != nil {
 		log.Println(db.Error)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -180,7 +182,15 @@ func UpdateEmployee(c *gin.Context){
 		})
 		return
 	}
-
+	if sql_employee == nil {
+		log.Println("不存在")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    http.StatusBadRequest,
+			"message": "不存在",
+			"data":    nil,
+		})
+		return
+	}
 	//修改
 	if err := employee.Update(&employee).Error; err != nil {
 		log.Println(db.Error)
@@ -199,3 +209,4 @@ func UpdateEmployee(c *gin.Context){
         "data":    nil,
     })
 }
+
